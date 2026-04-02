@@ -6,7 +6,7 @@ from datetime import datetime
 Base = declarative_base()
 
 class Database:
-    def __init__(self, db_url='mysql+mysqldb://root:991227@localhost:3306/youku_db'):
+    def __init__(self, db_url='mysql+pymysql://root:991227@localhost:3306/youku_db'):
         self.engine = create_engine(db_url, echo=False)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()

@@ -38,4 +38,106 @@ def login(conn):
     if back_dic.get("flag"):
         user_info["cookies"] = back_dic.get("session")
     print(back_dic.get("msg"))
+
    
+def upload_movie(conn):
+    movie_list = os.listdir(settings.UPLOAD_MOVIE_PATH)
+    if not movie_list:
+        print("没有电影")
+        return
+
+    for index,movie in enumerate(movie_list):
+        print(index,movie)
+
+    choice = input("请输入电影编号")
+    if choice.isdigit() and int(choice) in range(len(movie_list)):
+        choice = int(choice)
+
+        movie_name = movie_list[choice]
+        movie_path = os.path.join(settings.UPLOAD_MOVIE_PATH,movie_name)
+        movie_md5 = get_movie_md5(movie_path)
+        movie_size = os.path.getsize(movie_path)
+        send_dic = {
+            "type": "check_movie",
+            "session":user_info.get("cookies"),
+            "movie_md5":movie_md5
+        }
+        back_dic = send_msg(send_dic, conn)
+        print(back_dic.get("msg"))
+        if back_dic.get("flag"):
+
+            while 1:
+                is_vip = input("是否免费1/0")
+                if is_vip =="1"or is_vip=="0":
+                    is_vip= int(is_vip)
+                    break
+
+            send_dic = {
+                "type": "upload_movie",
+                "session": user_info.get("cookies"),
+                "movie_name": movie_name,
+                "movie_md5": movie_md5,
+                "movie_size" :movie_size,
+                "is_vip":is_vip
+            }
+            back_dic = send_msg(send_dic, conn, movie_path)
+            print(back_dic.get("msg"))
+    else:
+        print("输入错误")
+
+
+
+def delete_movie(conn):
+    send_dic = {
+        "type": "get_movie_list",
+        "session": user_info.get("cookies"),
+        "is_free": 2
+    }
+    back_dic = send_msg(send_dic, conn)
+    if back_dic.get("flag"):
+        movie_list = back_dic.get("msg")
+        for index,movie in enumerate(movie_list):
+            print(f"{index+1}. {movie}")
+        choice = input("请输入要删除的视频编号:\n")
+        if choice.isdigit() and int(choice) in range(len(movie_list)):
+            choice = int(choice)
+            movie_name = movie_list[choice]
+            send_dic = {
+                "type": "delete_movie",
+                "session": user_info.get("cookies"),
+                "movie_name": movie_name,
+            }
+            back_dic = send_msg(send_dic, conn)
+            print(back_dic.get("msg"))
+    else:
+        print(back_dic.get("msg"))
+
+def send_notice(conn):
+    title = input("请输入公告标题:\n")
+    content = input("请输入公告内容:\n")
+    send_dic = {
+        "type": "send_notice",
+        "session": user_info.get("cookies"),
+        "title": title,
+        "content": content,
+    }
+    back_dic = send_msg(send_dic, conn)
+    print(back_dic.get("msg"))
+
+def view(conn):
+    func_dic = {
+        "1":register,
+        "2":login,
+        "3":upload_movie,
+        "4":delete_movie,
+        "5":send_notice,
+    }
+    while 1:
+        print(settings.admin_msg)
+        choice = input("请输入功能编号")
+        if choice == "q":
+            user_info["cookies"] = None
+            break
+        if choice in func_dic:
+            func_dic[choice](conn)
+        

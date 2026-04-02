@@ -32,7 +32,10 @@ def task_socket(conn,addr):
     while 1:
         try:
             user_dic = recv_msg(conn)
-            func_type = user_dic.get("func_type")
+            print(f"[DEBUG] 接收到的消息: {user_dic}")  # 添加调试打印
+            func_type = user_dic.get("type")
+            print(f"[DEBUG] func_type: {func_type}")  # 添加调试打印
+            print(f"[DEBUG] func_dic keys: {list(func_dic.keys())}")  # 添加调试打印
             if func_type not in func_dic:
                 send_dic = {
                     "flag":False,

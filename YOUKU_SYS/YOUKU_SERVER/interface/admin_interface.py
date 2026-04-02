@@ -38,7 +38,8 @@ def upload_movie_interface(user_dic,conn):
 
 @login_auth
 def delete_movie_interface(user_dic,conn):
-    movie_obj = db.session.query(Movie).filter_by(movie_id = user_dic.get("movie_id")).first()
+    movie_name = user_dic.get("movie_name")
+    movie_obj = db.session.query(Movie).filter_by(movie_name=movie_name).first()
     movie_obj.is_delete = 1
     db.session.commit()
     send_dic = {
