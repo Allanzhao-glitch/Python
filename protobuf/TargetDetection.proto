@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package TargetDetection;
+
+message Rect{
+  int32 x1 = 1;
+  int32 y1 = 2;
+  int32 x2 = 3;
+  int32 y2 = 4;
+}
+
+
+/*目标的信息*/
+message TargetInfo{
+    int32 targetId = 1;    //目标编号
+    Rect box = 2;           //目标在图片中的位置
+    float boxScore = 3;     //目标检测的分数
+    string labelType = 4;   //目标的分类
+    bytes imageData = 5;    //将目标裁剪后保存成图片数据
+    string imageType = 6;   //图片类型: jpg, png...
+    string otherData= 9;    //其他备注信息
+}
+
+/* 目标检测 */
+message TargetDetection{
+    string ImageName = 1;        //图片名称
+    int64 timestamp = 2;        //时间戳
+    int32 width = 3;        //图片宽度
+    int32 height = 4;        //图片高度
+    repeated TargetInfo TargetList = 5; //目标列表
+}
